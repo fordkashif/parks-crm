@@ -22,6 +22,8 @@ public class CustomerResponse {
     private Instant lastInteractionAt;
     private String notes;
     private AddressDto address;
+    private String createdBy;
+    private String updatedBy;
     private Instant createdAt;
     private Instant updatedAt;
 }

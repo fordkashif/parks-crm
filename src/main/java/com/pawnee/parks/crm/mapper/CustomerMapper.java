@@ -40,6 +40,8 @@ public class CustomerMapper {
                 .lastInteractionAt(c.getLastInteractionAt())
                 .notes(c.getNotes())
                 .address(toDto(c.getAddress()))
+                .createdBy(c.getCreatedBy())
+                .updatedBy(c.getUpdatedBy())
                 .createdAt(c.getCreatedAt())
                 .updatedAt(c.getUpdatedAt())
                 .build();

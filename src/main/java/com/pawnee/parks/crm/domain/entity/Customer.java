@@ -3,10 +3,8 @@ package com.pawnee.parks.crm.domain.entity;
 import com.pawnee.parks.crm.domain.enums.CustomerStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +17,7 @@ import java.util.UUID;
 @Table(name = "customers", uniqueConstraints = {
         @UniqueConstraint(name = "uk_customers_email", columnNames = "email")
 })
-public class Customer {
+public class Customer extends BaseAuditable{
 
     @Id
     @GeneratedValue
@@ -54,13 +52,5 @@ public class Customer {
 
     @Embedded
     private Address address;
-
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private Instant updatedAt;
 
 }
