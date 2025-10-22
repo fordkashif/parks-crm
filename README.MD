@@ -159,3 +159,14 @@ Subsequent GET returns 404.
 - Tests use MockMvc to exercise real HTTP flows.
 
 ---
+
+## Shortcuts & Assumptions (2-hour timebox)
+
+- **H2 in-memory database** instead of Postgres; swap JDBC URL + driver to run in prod.
+- **Deterministic insight** (simple rules) instead of a rules engine/ML; endpoint contract stays stable for future upgrades.
+- **No auth** for simplicity; auditing uses `AuditorAware` fallback `"system"` (wired for future Spring Security).
+- **Hard uniqueness check in service** for email (H2 doesn’t support partial unique indexes for soft-delete easily). In Postgres, prefer a **partial unique index** on `email WHERE deleted_at IS NULL`.
+- **Minimal PATCH semantics** (replace-on-provided fields); no PATCH field-level validation rules beyond base type checks.
+- **DTO mapping is manual** (simple and explicit). In a larger codebase we might adopt **MapStruct** for compile-time mappers.
+- **Error model kept concise** (single envelope + code/message). Future: add `details` array per field.
+- **Basic pagination & search** (status + text). Future: multi-tag filter, sort by multiple fields, cursor pagination.
