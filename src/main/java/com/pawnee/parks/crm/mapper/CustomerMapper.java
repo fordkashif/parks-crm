@@ -35,7 +35,7 @@ public class CustomerMapper {
                 .email(c.getEmail())
                 .phone(c.getPhone())
                 .organization(c.getOrganization())
-                .tags(c.getTags())
+                .tags(c.getTags() == null ? java.util.List.of() : java.util.List.copyOf(c.getTags()))
                 .status(c.getStatus())
                 .lastInteractionAt(c.getLastInteractionAt())
                 .notes(c.getNotes())

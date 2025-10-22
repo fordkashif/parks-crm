@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "internal_error", "Unexpected error");
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "internal_error", ex.getClass().getSimpleName() + ": " + ex.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String code, String message) {
