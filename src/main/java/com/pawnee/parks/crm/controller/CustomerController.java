@@ -49,6 +49,16 @@ public class CustomerController {
         return service.list(status, search, pageable);
     }
 
+    @Operation(summary = "Update (partial) customer")
+    @PatchMapping("/{id}")
+    public CustomerResponse update(
+            @PathVariable java.util.UUID id,
+            @RequestBody com.pawnee.parks.crm.dto.CustomerUpdateRequest request
+    ) {
+        return service.update(id, request);
+    }
+
+
     @Operation(summary = "Delete customer")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

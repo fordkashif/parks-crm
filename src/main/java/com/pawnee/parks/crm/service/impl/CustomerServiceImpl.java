@@ -4,6 +4,7 @@ import com.pawnee.parks.crm.domain.entity.Customer;
 import com.pawnee.parks.crm.domain.enums.CustomerStatus;
 import com.pawnee.parks.crm.dto.CustomerCreateRequest;
 import com.pawnee.parks.crm.dto.CustomerResponse;
+import com.pawnee.parks.crm.dto.CustomerUpdateRequest;
 import com.pawnee.parks.crm.dto.PageResponse;
 import com.pawnee.parks.crm.exception.ConflictException;
 import com.pawnee.parks.crm.exception.NotFoundException;
@@ -68,6 +69,31 @@ public class CustomerServiceImpl implements CustomerService {
                 .pageSize(pageable.getPageSize())
                 .total(page.getTotalElements())
                 .build();
+    }
+
+    @Override
+    public CustomerResponse update(UUID id, CustomerUpdateRequest req) {
+        var c = repository.findById(id).orElseThrow(() -> new NotFoundException("Customer not found"));
+
+        if (req.getFirstName() != null) c.setFirstName(req.getFirstName());
+        if (req.getLastName() != null)  c.setLastName(req.getLastName());
+        if (req.getPhone() != null)     c.setPhone(req.getPhone());
+        if (req.getOrganization() != null) c.setOrganization(req.getOrganization());
+        if (req.getTags() != null)      c.setTags(req.getTags());
+        if (req.getStatus() != null)    c.setStatus(req.getStatus());
+        if (req.getLastInteractionAt() != null) c.setLastInteractionAt(req.getLastInteractionAt());
+        if (req.getNotes() != null)     c.setNotes(req.getNotes());
+        if (req.getAddress() != null) {
+            // replace whole address for simplicity
+            c.setAddress(new com.pawnee.parks.crm.domain.entity.Address(
+                    req.getAddress().getLine1(),
+                    req.getAddress().getLine2(),
+                    req.getAddress().getCity(),
+                    req.getAddress().getState(),
+                    req.getAddress().getPostalCode()
+            ));
+        }
+        return mapper.toDto(c);
     }
 
 

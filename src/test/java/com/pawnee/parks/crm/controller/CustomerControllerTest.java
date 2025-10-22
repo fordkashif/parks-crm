@@ -61,6 +61,19 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.items", hasSize(greaterThanOrEqualTo(1))))
                 .andExpect(jsonPath("$.total", greaterThanOrEqualTo(1)));
 
+        // patch
+        mockMvc.perform(patch("/api/v1/customers/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+          {"tags": ["vendor","community"], "status": "INACTIVE"}
+        """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tags", hasItems("vendor","community")))
+                .andExpect(jsonPath("$.status").value("INACTIVE"))
+                .andExpect(jsonPath("$.updatedAt").exists())
+                .andExpect(jsonPath("$.updatedBy").value(not(isEmptyOrNullString())));
+
+
         // insight
         mockMvc.perform(get("/api/v1/customers/{id}/insight", id))
                 .andExpect(status().isOk());
