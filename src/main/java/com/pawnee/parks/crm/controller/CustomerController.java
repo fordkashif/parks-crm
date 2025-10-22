@@ -68,7 +68,10 @@ public class CustomerController {
 
     @Operation(summary = "Get mocked insight for a customer")
     @GetMapping("/{id}/insight")
-    public String insight(@PathVariable UUID id) {
-        return "{\"insight\": \"" + service.insight(id).replace("\"", "\\\"") + "\"}";
+    public com.pawnee.parks.crm.dto.InsightResponse insight(@PathVariable java.util.UUID id) {
+        return com.pawnee.parks.crm.dto.InsightResponse.builder()
+                .insight(service.insight(id))
+                .build();
     }
+
 }
