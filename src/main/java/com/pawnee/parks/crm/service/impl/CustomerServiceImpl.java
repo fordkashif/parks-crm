@@ -54,13 +54,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public PageResponse<CustomerResponse> list(CustomerStatus status, String search, Pageable pageable) {
-        var page = (status != null)
-                ? repository.findByStatusAndDeletedAtIsNull(status, pageable)
-                : (search != null && !search.isBlank())
-                ? repository.searchActive(search, pageable)
-                : repository.findAllByDeletedAtIsNull(pageable);
+        String q = (search != null && !search.isBlank()) ? search : null;
+
+        var page = repository.searchActive(status, q, pageable);
 
         var items = page.getContent().stream().map(mapper::toDto).toList();
         return PageResponse.<CustomerResponse>builder()
@@ -70,7 +68,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .total(page.getTotalElements())
                 .build();
     }
-
 
     @Override
     public CustomerResponse update(UUID id, CustomerUpdateRequest req) {

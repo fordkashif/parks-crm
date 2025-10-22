@@ -21,14 +21,18 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     Page<Customer> findByStatusAndDeletedAtIsNull(CustomerStatus status, Pageable pageable);
 
     @Query("""
-       SELECT c FROM Customer c
-       WHERE c.deletedAt IS NULL
-         AND (
-              LOWER(c.firstName) LIKE LOWER(CONCAT('%', :q, '%'))
-           OR LOWER(c.lastName)  LIKE LOWER(CONCAT('%', :q, '%'))
-           OR LOWER(c.email)     LIKE LOWER(CONCAT('%', :q, '%'))
-         )
-       """)
-    Page<Customer> searchActive(@org.springframework.data.repository.query.Param("q") String q, Pageable pageable);
+           SELECT c FROM Customer c
+           WHERE c.deletedAt IS NULL
+             AND (:status IS NULL OR c.status = :status)
+             AND (
+                  :q IS NULL
+                  OR LOWER(c.firstName) LIKE LOWER(CONCAT('%', :q, '%'))
+                  OR LOWER(c.lastName)  LIKE LOWER(CONCAT('%', :q, '%'))
+                  OR LOWER(c.email)     LIKE LOWER(CONCAT('%', :q, '%'))
+             )
+           """)
+    Page<Customer> searchActive(@org.springframework.data.repository.query.Param("status") CustomerStatus status,
+                                @org.springframework.data.repository.query.Param("q") String q,
+                                Pageable pageable);
 
 }
