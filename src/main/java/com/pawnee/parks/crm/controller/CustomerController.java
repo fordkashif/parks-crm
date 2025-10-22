@@ -1,9 +1,7 @@
 package com.pawnee.parks.crm.controller;
 
 import com.pawnee.parks.crm.domain.enums.CustomerStatus;
-import com.pawnee.parks.crm.dto.CustomerCreateRequest;
-import com.pawnee.parks.crm.dto.CustomerResponse;
-import com.pawnee.parks.crm.dto.PageResponse;
+import com.pawnee.parks.crm.dto.*;
 import com.pawnee.parks.crm.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,7 +51,7 @@ public class CustomerController {
     @PatchMapping("/{id}")
     public CustomerResponse update(
             @PathVariable java.util.UUID id,
-            @RequestBody com.pawnee.parks.crm.dto.CustomerUpdateRequest request
+            @RequestBody CustomerUpdateRequest request
     ) {
         return service.update(id, request);
     }
@@ -68,8 +66,8 @@ public class CustomerController {
 
     @Operation(summary = "Get mocked insight for a customer")
     @GetMapping("/{id}/insight")
-    public com.pawnee.parks.crm.dto.InsightResponse insight(@PathVariable java.util.UUID id) {
-        return com.pawnee.parks.crm.dto.InsightResponse.builder()
+    public InsightResponse insight(@PathVariable java.util.UUID id) {
+        return InsightResponse.builder()
                 .insight(service.insight(id))
                 .build();
     }

@@ -22,10 +22,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
-        var msg = ex.getBindingResult().getFieldErrors().stream()
+        String msg = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
                 .map(fe -> fe.getField() + " " + fe.getDefaultMessage())
-                .findFirst().orElse("Validation error");
-        return build(HttpStatus.UNPROCESSABLE_ENTITY, "validation_error", msg);
+                .distinct()
+                .collect(java.util.stream.Collectors.joining("; "));
+
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, "validation_error",
+                msg.isBlank() ? "Validation error" : msg);
     }
 
     @ExceptionHandler(Exception.class)
