@@ -3,6 +3,7 @@ package com.pawnee.parks.crm.domain.entity;
 import com.pawnee.parks.crm.domain.enums.CustomerStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import java.time.Instant;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Table(name = "customers", uniqueConstraints = {
         @UniqueConstraint(name = "uk_customers_email", columnNames = "email")
 })
+@Where(clause = "deleted_at IS NULL")
 public class Customer extends BaseAuditable{
 
     @Id
@@ -52,5 +54,7 @@ public class Customer extends BaseAuditable{
 
     @Embedded
     private Address address;
+
+    private Instant deletedAt;
 
 }

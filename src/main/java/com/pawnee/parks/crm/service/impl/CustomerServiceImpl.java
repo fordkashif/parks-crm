@@ -46,23 +46,23 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse get(UUID id) {
         Customer c = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
+
+        if (c.getDeletedAt() != null) {
+            throw new NotFoundException("Customer not found");
+        }
         return mapper.toDto(c);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<CustomerResponse> list(CustomerStatus status, String search, Pageable pageable) {
-        var page =
-                (status != null)
-                        ? repository.findByStatus(status, pageable)
-                        : (search != null && !search.isBlank())
-                        ? repository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
-                        search, search, search, pageable)
-                        : repository.findAll(pageable);
+        var page = (status != null)
+                ? repository.findByStatusAndDeletedAtIsNull(status, pageable)
+                : (search != null && !search.isBlank())
+                ? repository.searchActive(search, pageable)
+                : repository.findAllByDeletedAtIsNull(pageable);
 
-        // Map and build your response
         var items = page.getContent().stream().map(mapper::toDto).toList();
-
         return PageResponse.<CustomerResponse>builder()
                 .items(items)
                 .page(pageable.getPageNumber() + 1)
@@ -70,6 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .total(page.getTotalElements())
                 .build();
     }
+
 
     @Override
     public CustomerResponse update(UUID id, CustomerUpdateRequest req) {
@@ -84,7 +85,6 @@ public class CustomerServiceImpl implements CustomerService {
         if (req.getLastInteractionAt() != null) c.setLastInteractionAt(req.getLastInteractionAt());
         if (req.getNotes() != null)     c.setNotes(req.getNotes());
         if (req.getAddress() != null) {
-            // replace whole address for simplicity
             c.setAddress(new com.pawnee.parks.crm.domain.entity.Address(
                     req.getAddress().getLine1(),
                     req.getAddress().getLine2(),
@@ -99,10 +99,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void delete(UUID id) {
-        if (!repository.existsById(id)) {
-            throw new NotFoundException("Customer not found");
+        var c = repository.findById(id).orElseThrow(() -> new NotFoundException("Customer not found"));
+        if (c.getDeletedAt() != null) {
+            return;
         }
-        repository.deleteById(id);
+        c.setDeletedAt(java.time.Instant.now());
+        c.setStatus(CustomerStatus.INACTIVE);
     }
 
     @Override
